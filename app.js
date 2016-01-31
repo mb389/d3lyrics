@@ -42,12 +42,15 @@ return music.trackSearch({q: artistArr[j], f_has_lyrics: true, page_size: 100 })
         return lyricBank.data;
     })
     .then(function(artist){
-      var songStrLen=superCounter(artist[j].lyrics.join(" "));
+      var songStrLen="";
+      for (var prop in artist[j].lyrics)
+         songStrLen += artist[j].lyrics[prop];
+      songStrLen=countWords(songStrLen);
       countArr.push({artist: artist[j].artist, wordLength: songStrLen});
       return countArr;
    })
    .then(function(final){
-      console.log(final)
+      //console.log(final)
       return final;
    })
     .catch(function(err) {
@@ -55,19 +58,17 @@ return music.trackSearch({q: artistArr[j], f_has_lyrics: true, page_size: 100 })
     });
 //}
 
-console.log(superCounter("my fine house"));
 
-function superCounter(x) {
-  var charCount = x.length;
-  var wordCount = x.split(" ").length;
-  var whiteSpace = wordCount - 1;
-  var wordArray = [x.split(" ")];
+
+function countWords(s){
+    s = s.replace(/(^\s*)|(\s*$)/gi,"");//exclude  start and end white-space
+    s = s.replace(/[ ]{2,}/gi," ");//2 or more space to 1
+    s = s.replace(/\n /,"\n"); // exclude newline with a start spacing
+    var wordArray = s.split(' ');
   var wordAvg = 0;
-  for (var i = 0; i < wordCount.length; i++){
-    wordAvg += wordArray[i];
+  for (var i = 0; i < wordArray.length; i++){
+    wordAvg += wordArray[i].length;
   }
-  var avgLen = wordAvg / wordCount;
-
+  var avgLen = wordAvg / wordArray.length;
   return avgLen;
-  //console.log(("Words: " + wordArray[0]), "Character count: " + charCount, "Word count: " + wordCount, "Whitespace count: " + whiteSpace, "Word length average: " + avgLen);
-};
+}
